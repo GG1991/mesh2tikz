@@ -1,0 +1,7 @@
+*.pdf
+*.aux
+*.log
+#!ex_1/*
+*.dat
+*.swp
+*.tex
