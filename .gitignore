@@ -1,7 +1,8 @@
 *.pdf
 *.aux
 *.log
-#!ex_1/*
-*.dat
+!ex_1/*
 *.swp
 *.tex
+!ex_2/*
+*.dat

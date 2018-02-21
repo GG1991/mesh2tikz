@@ -2,6 +2,16 @@
 #
 # Gives a tiks file that represents a mesh
 #
+# coordinates
+# 0.0,1.0
+# 1.2,1.3
+# ...
+#
+# color (#elem)
+# 1 (blue)
+# 2 (green)
+# ...
+#
 
 if [ $# -ne 3 ]; then echo "Usage: mesh2tikz <elements.dat> <coordinates.dat> <colors.dat>"; exit 1; fi
 
@@ -21,6 +31,7 @@ if [ $ncol -ne $nelm ]; then echo "$colo_file should have the same number of lin
 
 mapfile -t coor < $coor_file
 mapfile -t elem < $elem_file
+mapfile -t colo < $colo_file
 
 echo "\documentclass[tikz,border=5]{standalone}"
 echo "\usetikzlibrary{automata,arrows,calc,positioning}"
@@ -35,14 +46,9 @@ for i in "${!coor[@]}"; do
 done
 
 # poligons
-for i in "${!elem[@]}"; do 
- printf "%s" "\draw [fill=blue!50] " #(0) -- (1) -- (3) -- (2);"
- for j in "${elem[i]:0:${#elem[i]}-1}"; do 
-  printf "(%d) -- " $j
- done
- for j in "${elem[i]:${#elem[i]}-1:${#elem[i]}}"; do 
-  printf "(%d) -- cycle;\n" $j
- done
+for i in $(seq 0 $((${#elem[@]}-1))); do 
+ echo "${colo[i]}" | awk 'BEGIN {colo[0]="blue";colo[1]="green"}{printf("\\draw [fill=%s!50] ", colo[$1-1])}'
+ echo "${elem[i]}" | awk '{for (i=0;i<NF;i++) printf("(%d) -- %s",$(i+1),(i<NF-1)?" ":"cycle;\n")}'
 done
 
 # circles in nodes
